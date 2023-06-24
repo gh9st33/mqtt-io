@@ -76,13 +76,11 @@ class GPIO(GenericGPIO):
 
     def get_interrupt_value(self, pin: PinType, *args: Any, **kwargs: Any) -> bool:
         edge = self.interrupt_edges[pin]
-        if edge == InterruptEdge.BOTH:
-            # Polling the pin for its value is a bit crap, but I can't find any alternative
-            value = self.get_pin(pin)
-        else:
-            # If we're listening for RISING or FALLING then we infer the pin's value
-            value = edge == InterruptEdge.RISING
-        return value
+        return (
+            self.get_pin(pin)
+            if edge == InterruptEdge.BOTH
+            else edge == InterruptEdge.RISING
+        )
 
     def set_pin(self, pin: PinType, value: bool) -> None:
         self.io.output(pin, value)

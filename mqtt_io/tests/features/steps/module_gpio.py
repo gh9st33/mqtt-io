@@ -44,7 +44,7 @@ def step(context: Any, module_name: str, pin_name: str) -> None:
 
 @then("{pin_name} pin should have been set up as an {io_dir}")  # type: ignore[no-redef]
 def step(context: Any, pin_name: str, io_dir: str) -> None:
-    assert io_dir in ("input", "output")
+    assert io_dir in {"input", "output"}
     mqttio = context.data["mqttio"]
     io_conf = getattr(mqttio, f"digital_{io_dir}_configs")[pin_name]
     module = mqttio.gpio_modules[io_conf["module"]]
@@ -66,7 +66,7 @@ def step(
     setup_func_name: str,
     pin_name: str,
 ) -> None:
-    assert should_shouldnt in ("should", "shouldn't")
+    assert should_shouldnt in {"should", "shouldn't"}
     mqttio = context.data["mqttio"]
     module = mqttio.gpio_modules[module_name]
     relevant_call_args = None
@@ -82,7 +82,7 @@ def step(
 
 @then("a digital input poller task {is_isnt} added for {pin_name}")  # type: ignore[no-redef]
 def step(context: Any, is_isnt: str, pin_name: str):
-    assert is_isnt in ("is", "isn't")
+    assert is_isnt in {"is", "isn't"}
     mqttio = context.data["mqttio"]
 
     poller_task_pin_names = {
@@ -117,7 +117,7 @@ def step(context: Any, is_isnt: str, pin_name: str):
 
 @then("a digital output loop task {is_isnt} added for GPIO module {module_name}")  # type: ignore[no-redef]
 def step(context: Any, is_isnt: str, module_name: str):
-    assert is_isnt in ("is", "isn't")
+    assert is_isnt in {"is", "isn't"}
     mqttio = context.data["mqttio"]
     module = mqttio.gpio_modules[module_name]
     task_modules = {
@@ -152,7 +152,7 @@ def step(context: Any, is_isnt: str, module_name: str):
 
 @then("{pin_name} {should_shouldnt} be configured as a remote interrupt")  # type: ignore[no-redef]
 def step(context: Any, pin_name: str, should_shouldnt: str):
-    assert should_shouldnt in ("should", "shouldn't")
+    assert should_shouldnt in {"should", "shouldn't"}
     mqttio = context.data["mqttio"]
     in_conf = mqttio.digital_input_configs[pin_name]
     module = mqttio.gpio_modules[in_conf["module"]]
@@ -175,8 +175,8 @@ def step(context: Any, pin_name: str, direction_str: str):
 @when("{pin_name} reads a value of {value_str} with a last value of {last_value_str}")  # type: ignore[no-redef]
 @async_run_until_complete(loop="loop")
 async def step(context: Any, pin_name: str, value_str: str, last_value_str: str) -> None:
-    assert value_str in ("true", "false")
-    assert last_value_str in ("null", "true", "false")
+    assert value_str in {"true", "false"}
+    assert last_value_str in {"null", "true", "false"}
     value_map = dict(true=True, false=False, null=None)
     mqttio: MqttIo = context.data["mqttio"]
     in_conf = mqttio.digital_input_configs[pin_name]
@@ -188,7 +188,7 @@ async def step(context: Any, pin_name: str, value_str: str, last_value_str: str)
 @when("we set digital output {pin_name} to {on_off}")  # type: ignore[no-redef]
 @async_run_until_complete(loop="loop")
 async def step(context: Any, pin_name: str, on_off: str) -> None:
-    assert on_off in ("on", "off")
+    assert on_off in {"on", "off"}
     mqttio: MqttIo = context.data["mqttio"]
     out_conf = mqttio.digital_output_configs[pin_name]
     module = mqttio.gpio_modules[out_conf["module"]]

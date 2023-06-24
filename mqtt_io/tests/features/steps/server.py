@@ -42,7 +42,7 @@ def step(context: Any, method_name: str) -> None:
 
 @when("we {lock_unlock} interrupt lock for {pin_name}")  # type: ignore[no-redef]
 def step(context: Any, lock_unlock: str, pin_name: str) -> None:
-    assert lock_unlock in ("lock", "unlock")
+    assert lock_unlock in {"lock", "unlock"}
     mqttio: MqttIo = context.data["mqttio"]
     lock = mqttio.interrupt_locks[pin_name]
     locked = lock.locked()
@@ -62,7 +62,7 @@ async def step(context: Any):
 
 @then("interrupt lock for {pin_name} should be {locked_unlocked}")  # type: ignore[no-redef]
 def step(context: Any, locked_unlocked: str, pin_name: str) -> None:
-    assert locked_unlocked in ("locked", "unlocked")
+    assert locked_unlocked in {"locked", "unlocked"}
     mqttio: MqttIo = context.data["mqttio"]
     lock = mqttio.interrupt_locks[pin_name]
     locked = lock.locked()
@@ -107,7 +107,7 @@ def step(context: Any):
 
 @then("{method_name} on MqttIo {should_shouldnt} be called")  # type: ignore[no-redef]
 def step(context: Any, method_name: str, should_shouldnt: str):
-    assert should_shouldnt in ("should", "shouldn't")
+    assert should_shouldnt in {"should", "shouldn't"}
     mock: Union[Mock, AsyncMock] = context.data["mocks"][f"mqttio.{method_name}"]
     if should_shouldnt == "should":
         mock.assert_called()
@@ -148,7 +148,7 @@ def step(context: Any, target: str, name: str) -> None:
 
 @then("GPIO module {module_name} {should_shouldnt} have an output queue initialised")  # type: ignore[no-redef]
 def step(context: Any, module_name: str, should_shouldnt: str) -> None:
-    assert should_shouldnt in ("should", "shouldn't")
+    assert should_shouldnt in {"should", "shouldn't"}
     mqttio = context.data["mqttio"]
     test = all(
         (

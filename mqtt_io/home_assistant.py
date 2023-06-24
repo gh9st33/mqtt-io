@@ -23,23 +23,20 @@ def get_common_config(
     Return config that's common across all HQ discovery announcements.
     """
     disco_conf: ConfigType = mqtt_conf["ha_discovery"]
-    config = dict(name=io_conf["name"])
-    config.update(
-        dict(
-            availability_topic="/".join(
-                (mqtt_conf["topic_prefix"], mqtt_conf["status_topic"])
-            ),
-            payload_available=mqtt_conf["status_payload_running"],
-            payload_not_available=mqtt_conf["status_payload_dead"],
-            device=dict(
-                manufacturer="MQTT IO",
-                model=f"v{VERSION}",
-                identifiers=["mqtt-io", mqtt_options.client_id],
-                name=disco_conf["name"],
-            ),
-        )
+    config = dict(name=io_conf["name"]) | dict(
+        availability_topic="/".join(
+            (mqtt_conf["topic_prefix"], mqtt_conf["status_topic"])
+        ),
+        payload_available=mqtt_conf["status_payload_running"],
+        payload_not_available=mqtt_conf["status_payload_dead"],
+        device=dict(
+            manufacturer="MQTT IO",
+            model=f"v{VERSION}",
+            identifiers=["mqtt-io", mqtt_options.client_id],
+            name=disco_conf["name"],
+        ),
     )
-    config.update(io_conf.get("ha_discovery", {}))
+    config |= io_conf.get("ha_discovery", {})
     return config
 
 

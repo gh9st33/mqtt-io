@@ -113,7 +113,7 @@ def _init_module(
     - Instantiating its class
     """
     module = import_module(
-        "%s.%s.%s" % (MODULE_IMPORT_PATH, module_type, module_config["module"])
+        f'{MODULE_IMPORT_PATH}.{module_type}.{module_config["module"]}'
     )
     # Doesn't need to be a deep copy because we're not mutating the base rules
     module_schema = get_main_schema_section(f"{module_type}_modules")
@@ -135,7 +135,7 @@ def output_name_from_topic(topic: str, prefix: str, topic_type: str) -> str:
     match = re.match(f"^{prefix}/{topic_type}/(.+?)/.+$", topic)
     if match is None:
         raise ValueError("Topic %r does not adhere to expected structure" % topic)
-    return match.group(1)
+    return match[1]
 
 
 class MqttIo:  # pylint: disable=too-many-instance-attributes
@@ -202,7 +202,7 @@ class MqttIo:  # pylint: disable=too-many-instance-attributes
 
         client_id: Optional[str] = config["client_id"]
         if not client_id:
-            client_id = "mqtt-io-%s" % sha1(topic_prefix.encode("utf8")).hexdigest()
+            client_id = f'mqtt-io-{sha1(topic_prefix.encode("utf8")).hexdigest()}'
 
         tls_enabled: bool = config.get("tls", {}).get("enabled")
 
@@ -604,27 +604,26 @@ class MqttIo:  # pylint: disable=too-many-instance-attributes
         """
         Publish Home Assistant Discovery messages.
         """
-        messages: List[MQTTMessageSend] = []
         mqtt_config: ConfigType = self.config["mqtt"]
 
-        for in_conf in self.digital_input_configs.values():
-            messages.append(
-                hass_announce_digital_input(
-                    in_conf, mqtt_config, self.mqtt_client_options
-                )
+        messages: List[MQTTMessageSend] = [
+            hass_announce_digital_input(
+                in_conf, mqtt_config, self.mqtt_client_options
             )
-        for out_conf in self.digital_output_configs.values():
-            messages.append(
-                hass_announce_digital_output(
-                    out_conf, mqtt_config, self.mqtt_client_options
-                )
+            for in_conf in self.digital_input_configs.values()
+        ]
+        messages.extend(
+            hass_announce_digital_output(
+                out_conf, mqtt_config, self.mqtt_client_options
             )
-        for sens_conf in self.sensor_input_configs.values():
-            messages.append(
-                hass_announce_sensor_input(
-                    sens_conf, mqtt_config, self.mqtt_client_options
-                )
+            for out_conf in self.digital_output_configs.values()
+        )
+        messages.extend(
+            hass_announce_sensor_input(
+                sens_conf, mqtt_config, self.mqtt_client_options
             )
+            for sens_conf in self.sensor_input_configs.values()
+        )
         for msg in messages:
             self.mqtt_task_queue.put_nowait(
                 PriorityCoro(self._mqtt_publish(msg), MQTT_ANNOUNCE_PRIORITY)
@@ -645,8 +644,8 @@ class MqttIo:  # pylint: disable=too-many-instance-attributes
             _LOG.info("Subscribed to topic: %r", topic)
 
     async def _mqtt_publish(self, msg: MQTTMessageSend, wait: bool = True) -> None:
-        if not self.mqtt_connected.is_set():
-            if wait:
+        if wait:
+            if not self.mqtt_connected.is_set():
                 _LOG.debug("_mqtt_publish awaiting MQTT connection")
                 await self.mqtt_connected.wait()
                 _LOG.debug("_mqtt_publish unblocked after MQTT connection")
@@ -943,12 +942,12 @@ class MqttIo:  # pylint: disable=too-many-instance-attributes
         except KeyError:
             _LOG.warning("No GPIO module config found named %r", out_conf["module"])
             return
-        if topic.endswith("/%s" % SET_SUFFIX):
+        if topic.endswith(f"/{SET_SUFFIX}"):
             # This is a message to set a digital output to a given value
             self.gpio_output_queues[out_conf["module"]].put_nowait((out_conf, payload))
         else:
             # This must be a set_on_ms or set_off_ms topic
-            desired_value = topic.endswith("/%s" % SET_ON_MS_SUFFIX)
+            desired_value = topic.endswith(f"/{SET_ON_MS_SUFFIX}")
 
             async def set_ms() -> None:
                 """

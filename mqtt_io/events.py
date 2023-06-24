@@ -127,12 +127,12 @@ class EventBus:
         """
         if not isinstance(event_class, type):
             raise TypeError(
-                "event_class must be of type 'type'. Got type %s." % type(event_class)
+                f"event_class must be of type 'type'. Got type {type(event_class)}."
             )
-        if not Event in event_class.mro():
+        if Event not in event_class.mro():
             raise TypeError("Event class must be a subclass of mqtt_io.events.Event")
         if not callable(callback):
-            raise TypeError("callback must be callable. Got type %s." % type(callback))
+            raise TypeError(f"callback must be callable. Got type {type(callback)}.")
         self._listeners.setdefault(event_class, []).append(callback)
 
         def remove_listener() -> None:

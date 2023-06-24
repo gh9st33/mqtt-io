@@ -97,9 +97,7 @@ class HCSR04:
                 measurements.append(self.distance)
             time.sleep(0.05)
         if not measurements:
-            raise RuntimeError(
-                "Unable to measure range on HC-SR04 sensor '%s'" % self.name
-            )
+            raise RuntimeError(f"Unable to measure range on HC-SR04 sensor '{self.name}'")
         return mean(measurements)
 
 

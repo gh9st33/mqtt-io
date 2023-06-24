@@ -27,11 +27,7 @@ def validate_gpio_module_names(
                     bad_configs,
                     io_section,
                     io_conf["name"],
-                    "%s section has no module configured with the name '%s'"
-                    % (
-                        module_section,
-                        io_conf["module"],
-                    ),
+                    f"""{module_section} section has no module configured with the name '{io_conf["module"]}'""",
                 )
 
 
@@ -44,7 +40,7 @@ def validate_gpio_modules_have_io_sections(
     """
     digital_inputs = config.get("digital_inputs", [])
     digital_outputs = config.get("digital_outputs", [])
-    modules_used = set(x["module"] for x in digital_inputs + digital_outputs)
+    modules_used = {x["module"] for x in digital_inputs + digital_outputs}
 
     for module in config.get("gpio_modules", []):
         if module["name"] not in modules_used:
@@ -52,8 +48,7 @@ def validate_gpio_modules_have_io_sections(
                 bad_configs,
                 "gpio_modules",
                 module["name"],
-                "GPIO module '%s' does not have any digital_input or digital_output configs"
-                % module["name"],
+                f"""GPIO module '{module["name"]}' does not have any digital_input or digital_output configs""",
             )
 
 
@@ -77,8 +72,7 @@ def validate_gpio_pins_only_configured_once(
                 bad_configs,
                 "gpio_modules",
                 module_name,
-                "Pin '%s' has more than one configuration in digital_inputs or digital_outputs"
-                % dup_pin,
+                f"Pin '{dup_pin}' has more than one configuration in digital_inputs or digital_outputs",
             )
 
 
@@ -92,9 +86,11 @@ def validate_gpio_interrupt_for(
     - A pin's interrupt_for doesn't contain itself
     - A pin with interrupt_for is configured as an interrupt
     """
-    interrupt_pins: Set[str] = set(
-        in_conf["name"] for in_conf in digital_inputs if in_conf.get("interrupt")
-    )
+    interrupt_pins: Set[str] = {
+        in_conf["name"]
+        for in_conf in digital_inputs
+        if in_conf.get("interrupt")
+    }
     for in_conf in [x for x in digital_inputs if x.get("interrupt_for")]:
         errors = []
         if "interrupt" not in in_conf:

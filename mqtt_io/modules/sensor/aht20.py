@@ -52,6 +52,5 @@ class Sensor(GenericSensor):
         if sens_conf["type"] == "humidity":
             return self._humidity
         raise RuntimeConfigError(
-            "aht20 sensor '%s' was not configured to return 'temperature' or 'humidity'"
-            % sens_conf["name"]
+            f"""aht20 sensor '{sens_conf["name"]}' was not configured to return 'temperature' or 'humidity'"""
         )
