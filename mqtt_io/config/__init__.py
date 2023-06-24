@@ -127,8 +127,9 @@ def custom_validate_main_config(config: ConfigType) -> ConfigType:
     # Make sure none of the lists use a name multiple times
     sections_with_duplicated_names = {}
     for config_section in unique_name_sections:
-        duplicate_names = get_duplicate_names(config.get(config_section, []))
-        if duplicate_names:
+        if duplicate_names := get_duplicate_names(
+            config.get(config_section, [])
+        ):
             sections_with_duplicated_names[config_section] = duplicate_names
 
     if sections_with_duplicated_names:

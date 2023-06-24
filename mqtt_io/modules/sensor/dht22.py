@@ -65,6 +65,5 @@ class Sensor(GenericSensor):
         if sens_conf["type"] == "humidity":
             return humidity
         raise RuntimeConfigError(
-            "dht22 sensor '%s' was not configured to return 'temperature' or 'humidity'"
-            % sens_conf["name"]
+            f"""dht22 sensor '{sens_conf["name"]}' was not configured to return 'temperature' or 'humidity'"""
         )

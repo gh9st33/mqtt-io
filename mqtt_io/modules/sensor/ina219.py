@@ -107,6 +107,5 @@ class Sensor(GenericSensor):
                 self.ina.sleep()
 
         raise RuntimeConfigError(
-            "ina219 sensor '%s' was not configured to return an accepted value"
-            % sens_conf["name"]
+            f"""ina219 sensor '{sens_conf["name"]}' was not configured to return an accepted value"""
         )

@@ -62,7 +62,7 @@ class GPIO(GenericGPIO):
         board = self.config["board"].upper()
         mode = self.config["mode"].upper()
         if not hasattr(gpio, board):
-            raise AssertionError("%s board not found" % board)
+            raise AssertionError(f"{board} board not found")
         gpio.setboard(getattr(gpio, board))
         gpio.setmode(getattr(gpio, mode))
 

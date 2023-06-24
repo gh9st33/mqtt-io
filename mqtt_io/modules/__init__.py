@@ -38,11 +38,11 @@ def install_missing_module_requirements(module: ModuleType) -> None:
         return
 
     pkgs_installed = pkg_resources.WorkingSet()
-    pkgs_required = []
-    for req in reqs:
-        if pkgs_installed.find(pkg_resources.Requirement.parse(req)) is None:
-            pkgs_required.append(req)
-
+    pkgs_required = [
+        req
+        for req in reqs
+        if pkgs_installed.find(pkg_resources.Requirement.parse(req)) is None
+    ]
     if not pkgs_required:
         _LOG.debug("Module %r has all of its requirements installed already.", module)
         return

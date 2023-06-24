@@ -54,8 +54,8 @@ class Sensor(GenericSensor):
         }
 
     def setup_sensor(self, sens_conf: ConfigType) -> None:
-        sens_type: str = sens_conf["type"]
         if "oversampling" in sens_conf:
+            sens_type: str = sens_conf["type"]
             set_oversampling = getattr(self.sensor, f"set_{sens_type}_oversample")
             set_oversampling(self.oversampling_map[sens_conf["oversampling"]])
 

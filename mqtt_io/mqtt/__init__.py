@@ -160,8 +160,7 @@ class AbstractMQTTClient(abc.ABC):
         """
         client_module = import_module(module_name)
         client: Type[AbstractMQTTClient]
-        client = client_module.MQTTClient  # type: ignore[attr-defined]
-        return client
+        return client_module.MQTTClient
 
 
 class MQTTException(Exception):

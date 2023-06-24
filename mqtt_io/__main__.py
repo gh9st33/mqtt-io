@@ -75,7 +75,7 @@ def main() -> None:
         raw_config = load_config(args.config, args.render)
         config = validate_and_normalise_main_config(raw_config)
     except ConfigValidationFailed as exc:
-        print(str(exc), file=sys.stderr)
+        print(exc, file=sys.stderr)
         sys.exit(1)
 
     if config["logging"]:

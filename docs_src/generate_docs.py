@@ -173,13 +173,8 @@ class ConfigSchemaParser:
         container: List[Dict[str, Any]],
         parents: Optional[List[str]] = None,
     ) -> None:
-        if parents is None:
-            parents = []
-        else:
-            parents = parents.copy()
-
-        child_schema = section.get("schema")
-        if child_schema:
+        parents = [] if parents is None else parents.copy()
+        if child_schema := section.get("schema"):
             parents.append("*")
             ConfigSchemaParser.parse_schema_section(child_schema, container, parents)
             return
@@ -311,12 +306,7 @@ def get_source(module_path: str, xpath: str, title: str) -> str:
     module = import_module(module_path)
     module_filepath = pathlib.Path(module.__file__)
     src, attrib = module_source(module, xpath)[0]
-    url = "%s/blob/%s/%s#L%s" % (
-        GITHUB_REPO,
-        HEAD.commit.hexsha,
-        module_filepath.relative_to(WORKSPACE_DIR),
-        attrib["lineno"],
-    )
+    url = f'{GITHUB_REPO}/blob/{HEAD.commit.hexsha}/{module_filepath.relative_to(WORKSPACE_DIR)}#L{attrib["lineno"]}'
     return f"[{title}]({url}):\n\n```python\n{src.rstrip()}\n```"
 
 
@@ -324,12 +314,7 @@ def get_source_link(module_path: str, xpath: str, title: str) -> str:
     module = import_module(module_path)
     module_filepath = pathlib.Path(module.__file__)
     _, attrib = module_source(module, xpath)[0]
-    url = "%s/blob/%s/%s#L%s" % (
-        GITHUB_REPO,
-        HEAD.commit.hexsha,
-        module_filepath.relative_to(WORKSPACE_DIR),
-        attrib["lineno"],
-    )
+    url = f'{GITHUB_REPO}/blob/{HEAD.commit.hexsha}/{module_filepath.relative_to(WORKSPACE_DIR)}#L{attrib["lineno"]}'
     return f"[{title}]({url}):"
 
 
@@ -371,10 +356,9 @@ def generate_modules_doc(docs_path: str) -> None:
 
 def generate_versions(versions: Set[str]) -> str:
     release_versions = sort_semver_versions(versions)
-    other_versions_set = set()
-    for version in versions:
-        if version not in release_versions:
-            other_versions_set.add(version)
+    other_versions_set = {
+        version for version in versions if version not in release_versions
+    }
     other_versions: List[str] = sorted(list(other_versions_set))
 
     ctx = dict(releases=release_versions, other_versions=other_versions)
